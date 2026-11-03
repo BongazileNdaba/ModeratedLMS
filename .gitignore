@@ -6,6 +6,11 @@ CMakeCache.txt
 cmake_install.cmake
 Makefile
 
+# Temporary and log files
+*.log
+*.tmp
+*.bak
+
 # Compiled binaries and objects
 *.exe
 *.dll
