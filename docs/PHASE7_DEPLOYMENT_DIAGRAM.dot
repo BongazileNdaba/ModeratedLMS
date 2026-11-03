@@ -1,0 +1,36 @@
+digraph Deployment {
+  graph [rankdir=TB, bgcolor="white", pad="0.25", nodesep="0.45", ranksep="0.65", fontname="Arial", label="Moderated LMS — UML Deployment View (v1.0 target)", labelloc=t, fontsize=18];
+  node [shape=box, style="rounded", color="#222222", fontcolor="#111111", fontname="Arial", fontsize=10, margin="0.16,0.10"];
+  edge [color="#333333", fontname="Arial", fontsize=9, arrowsize=0.8];
+
+  subgraph cluster_school {
+    label="School premises / offline local environment"; color="#444444"; style="rounded,dashed"; fontsize=12;
+    subgraph cluster_clients {
+      label="User access devices (optional terminals on school LAN)"; color="#777777"; style="rounded";
+      admin [label="<<device>>\nAdministrator workstation\nWindows / console terminal"];
+      lecturer [label="<<device>>\nLecturer workstation\nWindows / console terminal"];
+      hod [label="<<device>>\nHoD workstation\nWindows / console terminal"];
+      student [label="<<device>>\nStudent workstation\nWindows / console terminal"];
+    }
+    subgraph cluster_server {
+      label="School computer / application host"; color="#222222"; style="rounded";
+      runtime [label="<<executionEnvironment>>\nWindows 10/11 + C++17 runtime\nMSYS2 UCRT64 toolchain (build only)"];
+      app [label="<<artifact>>\nModeratedLMS.exe\nC++ application\nAuthentication + workflow services"];
+      db [shape=cylinder, style="", label="<<database>>\nmoderated_lms.db\nSQLite persistent records"];
+      sodium [label="<<artifact>>\nlibsodium\nArgon2id password hashing"];
+      runtime -> app [label="runs"];
+      app -> db [label="SQLite API / SQL"];
+      app -> sodium [label="password hash / verify"];
+    }
+    admin -> app [label="local console / LAN access\n(if client interface is deployed)", style=dashed];
+    lecturer -> app [label="local console / LAN access\n(if client interface is deployed)", style=dashed];
+    hod -> app [label="local console / LAN access\n(if client interface is deployed)", style=dashed];
+    student -> app [label="local console / LAN access\n(if client interface is deployed)", style=dashed];
+    backup [shape=folder, label="<<artifact>>\nEncrypted / access-controlled\nSQLite backup location"];
+    db -> backup [style=dashed, label="scheduled manual backup"];
+  }
+  internet [shape=cloud, label="Internet\nNot required at runtime\nRequired initially to fetch GoogleTest\nfor test-enabled CMake configure"];
+  internet -> runtime [style=dotted, label="initial development/test setup only"];
+  note [shape=note, style="filled", fillcolor="#f5f5f5", label="Deployment qualification:\nCurrent archive is a backend/service prototype.\nmain.cpp demonstrates account/authentication flows;\ncomplete four-role interactive menus and remote client\naccess are not implemented. Solid nodes are deployed\ncomponents; dashed client links are target topology only."];
+  note -> app [style=dotted, arrowhead=none];
+}

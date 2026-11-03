@@ -1,0 +1,32 @@
+# CMake build output
+/build/
+/cmake-build-*/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# Compiled binaries and objects
+*.exe
+*.dll
+*.so
+*.a
+*.o
+*.obj
+*.gcda
+*.gcno
+*.gcov
+coverage.info
+business-coverage.info
+
+# Local databases and backups
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
+
+# IDE and operating-system files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

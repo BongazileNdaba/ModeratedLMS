@@ -1,0 +1,34 @@
+name: Moderated LMS CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake g++ make libsqlite3-dev libsodium-dev cppcheck gcovr
+      - name: Configure
+        run: cmake -S . -B build -DBUILD_TESTING=ON -DCMAKE_BUILD_TYPE=Debug
+      - name: Build
+        run: cmake --build build --parallel 2
+      - name: Run automated tests
+        run: ctest --test-dir build --output-on-failure
+      - name: Static analysis
+        run: cppcheck --enable=warning,performance,portability --error-exitcode=1 --inline-suppr -I include src main.cpp
+      - name: Generate service coverage
+        run: gcovr --root . --filter 'src/services/' --xml-pretty --output coverage.xml --print-summary
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: moderated-lms-coverage
+          path: coverage.xml
